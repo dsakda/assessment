@@ -1,11 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	fmt.Println("Please use server.go for main file")
-	fmt.Println("start at port:", os.Getenv("PORT"))
+
+	err := godotenv.Load("dev.env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
 }
