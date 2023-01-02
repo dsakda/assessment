@@ -37,6 +37,7 @@ func main() {
 	})
 	e.POST("/expenses", expense.CreateExpenseHandler)
 	e.GET("/expenses/:id", expense.GetExpenseHandler)
+	e.PUT("/expenses/:id", expense.UpdateExpenseHandler)
 
 	e.Logger.Fatal(e.Start(os.Getenv("PORT")))
 }
