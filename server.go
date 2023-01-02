@@ -36,6 +36,7 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 	e.POST("/expenses", expense.CreateExpenseHandler)
+	e.GET("/expenses/:id", expense.GetExpenseHandler)
 
 	e.Logger.Fatal(e.Start(os.Getenv("PORT")))
 }

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -34,6 +35,37 @@ func TestCreateExpense(t *testing.T) {
 	assert.Equal(t, 39000, e.Amount)
 	assert.Equal(t, "buy a new phone", e.Note)
 	assert.Equal(t, 2, len(e.Tags))
+}
+
+func TestGetExpenseByID(t *testing.T) {
+	c := seedExpense(t)
+
+	var latest Expense
+	res := request(http.MethodGet, uri("expenses", strconv.Itoa(c.ID)), nil)
+	err := res.Decode(&latest)
+
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.Equal(t, c.ID, latest.ID)
+	assert.NotEmpty(t, latest.Title)
+	assert.NotEmpty(t, latest.Amount)
+	assert.NotEmpty(t, latest.Note)
+	assert.NotEmpty(t, latest.Tags)
+}
+
+func seedExpense(t *testing.T) Expense {
+	var c Expense
+	body := bytes.NewBufferString(`{
+		"title": "strawberry smoothie",
+		"amount": 79,
+		"note": "night market promotion discount 10 bath", 
+		"tags": ["food", "beverage"]
+	}`)
+	err := request(http.MethodPost, uri("expenses"), body).Decode(&c)
+	if err != nil {
+		t.Fatal("can't create expense:", err)
+	}
+	return c
 }
 
 func uri(paths ...string) string {
