@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-
+	"github.com/dsakda/assessment/expense"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -16,6 +16,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Some error occured. Err: %s", err)
 	}
+
+	expense.InitDB()
 
 	e := echo.New()
 
