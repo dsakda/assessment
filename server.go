@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+
 	"github.com/dsakda/assessment/expense"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -34,6 +35,7 @@ func main() {
 	e.GET("/expenses", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+	e.POST("/expenses", expense.CreateExpenseHandler)
 
 	e.Logger.Fatal(e.Start(os.Getenv("PORT")))
 }
