@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
+	"time"
 
 	"github.com/dsakda/assessment/expense"
 	"github.com/joho/godotenv"
@@ -36,5 +40,18 @@ func main() {
 	e.GET("/expenses/:id", expense.GetExpenseHandler)
 	e.PUT("/expenses/:id", expense.UpdateExpenseHandler)
 
-	e.Logger.Fatal(e.Start(os.Getenv("PORT")))
+	go func() {
+		if err := e.Start(os.Getenv("PORT")); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server")
+		}
+	}()
+
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt)
+	<-shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 }
