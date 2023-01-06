@@ -21,7 +21,7 @@ func UpdateExpenseHandler(c echo.Context) error {
 	stmt, err := db.Prepare("UPDATE expenses SET title=$2, amount=$3, note=$4, tags=$5 WHERE id=$1;")
 	if err != nil {
 		log.Println("can't prepare statment update", err)
-		return c.JSON(http.StatusInternalServerError, Err{Message: "ERROR, Can't update object."})
+		return c.JSON(http.StatusInternalServerError, Err{Message: "ERROR, Can't prepare statment to update object."})
 	}
 
 	if _, err := stmt.Exec(id, e.Title, e.Amount, e.Note, pq.Array(&e.Tags)); err != nil {
