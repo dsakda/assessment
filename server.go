@@ -26,9 +26,9 @@ func main() {
 	e := echo.New()
 
 	e.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
-		AuthScheme: "November",
+		AuthScheme: os.Getenv("AUTH_SCHEME"),
 		Validator: func(key string, c echo.Context) (bool, error) {
-			return key == "10, 2009", nil
+			return key == os.Getenv("AUTH_KEY"), nil
 		},
 	}))
 
