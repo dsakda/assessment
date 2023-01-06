@@ -6,13 +6,23 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	err := godotenv.Load("../dev.env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+}
 
 func TestCreateExpense(t *testing.T) {
 
@@ -103,7 +113,7 @@ func seedExpense(t *testing.T) Expense {
 }
 
 func uri(paths ...string) string {
-	host := "http://localhost:2565"
+	host := "http://localhost" + os.Getenv("PORT")
 	if paths == nil {
 		return host
 	}
@@ -114,7 +124,7 @@ func uri(paths ...string) string {
 
 func request(method, url string, body io.Reader) *Response {
 	req, _ := http.NewRequest(method, url, body)
-	req.Header.Add("Authorization", "November 10, 2009")
+	req.Header.Add("Authorization", os.Getenv("AUTH_SCHEME")+" "+os.Getenv("AUTH_KEY"))
 	req.Header.Add("Content-Type", "application/json")
 	client := http.Client{}
 	res, err := client.Do(req)

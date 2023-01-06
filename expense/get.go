@@ -2,6 +2,7 @@ package expense
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -12,7 +13,8 @@ func GetExpenseHandler(c echo.Context) error {
 	id := c.Param("id")
 	stmt, err := db.Prepare("SELECT id, title, amount, note, tags FROM expenses WHERE id = $1")
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, Err{Message: "can't prepare query expense statment:" + err.Error()})
+		log.Println(err.Error())
+		return c.JSON(http.StatusInternalServerError, Err{Message: "Can't prepare query expense statment."})
 	}
 
 	row := stmt.QueryRow(id)
@@ -24,19 +26,22 @@ func GetExpenseHandler(c echo.Context) error {
 	case nil:
 		return c.JSON(http.StatusOK, e)
 	default:
-		return c.JSON(http.StatusInternalServerError, Err{Message: "can't scan expense:" + err.Error()})
+		log.Println(err.Error())
+		return c.JSON(http.StatusInternalServerError, Err{Message: "can't scan expense."})
 	}
 }
 
 func GetAllExpensesHandler(c echo.Context) error {
 	stmt, err := db.Prepare("SELECT id, title, amount, note, tags FROM expenses order by id")
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, Err{Message: "can't prepare query all expenses statment:" + err.Error()})
+		log.Println(err.Error())
+		return c.JSON(http.StatusInternalServerError, Err{Message: "Can't prepare query all expenses statment."})
 	}
 
 	rows, err := stmt.Query()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, Err{Message: "can't query all expenses:" + err.Error()})
+		log.Println(err.Error())
+		return c.JSON(http.StatusInternalServerError, Err{Message: "Can't query all expenses."})
 	}
 
 	expenses := []Expense{}
@@ -45,7 +50,8 @@ func GetAllExpensesHandler(c echo.Context) error {
 		e := Expense{}
 		err := rows.Scan(&e.ID, &e.Title, &e.Amount, &e.Note, pq.Array(&e.Tags))
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, Err{Message: "can't scan expense:" + err.Error()})
+			log.Println(err.Error())
+			return c.JSON(http.StatusInternalServerError, Err{Message: "Can't scan expense."})
 		}
 		expenses = append(expenses, e)
 	}
